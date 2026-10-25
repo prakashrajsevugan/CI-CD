@@ -48,7 +48,23 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Show OIDC claims
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const token = await core.getIDToken('sts.amazonaws.com');
+            const payload = JSON.parse(
+              Buffer.from(token.split('.')[1], 'base64url').toString()
+            );
 
+            console.log('repository:', payload.repository);
+            console.log('repository_id:', payload.repository_id);
+            console.log('repository_owner:', payload.repository_owner);
+            console.log('repository_owner_id:', payload.repository_owner_id);
+            console.log('ref:', payload.ref);
+            console.log('sub:', payload.sub);
+            console.log('aud:', payload.aud);
+            
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
