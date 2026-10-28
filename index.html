@@ -3,44 +3,253 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>A Special Question 💖</title>
+
+  <title>Brotherhood 🤝</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <div class="hearts">
-    <span>♡</span>
-    <span>♥</span>
-    <span>♡</span>
-    <span>♥</span>
-    <span>♡</span>
-  </div>
+  <div class="floating"></div>
 
-  <main class="card">
+  <!-- Main Card -->
 
-    <div class="heart">💗</div>
+  <main class="card" id="card">
 
-    <p class="small-text">A little question...</p>
+    <div class="icon">
+      🤝
+    </div>
+
+    <p class="small-text">
+      Not just a friend...
+    </p>
 
     <h1>
-      Will you be<br>
-      <span>my special one?</span>
+      That's my<br>
+      <span>Brother. 🖤</span>
     </h1>
 
-    <p class="message">
-      Life feels a little brighter, happier, and more beautiful
-      with someone special by your side.
+    <p class="message" id="message">
+      We may fight, roast each other, and argue over stupid things...
+      but at the end of the day, I've always got your back.
     </p>
 
     <div class="buttons">
-      <button class="yes-btn">Yes 💖</button>
-      <button class="maybe-btn">Maybe 🌸</button>
+
+      <button class="bro-btn" id="broBtn">
+        Brotherhood 🤝
+      </button>
+
+      <button class="memory-btn" id="memoryBtn">
+        Show Memory 💭
+      </button>
+
     </div>
 
-    <p class="footer">Made with ♡</p>
+    <p class="footer">
+      Built on trust • loyalty • madness
+    </p>
 
   </main>
+
+
+  <!-- Surprise -->
+
+  <section class="success" id="success">
+
+    <div class="success-card">
+
+      <div class="big-icon">
+        🫂
+      </div>
+
+      <h2>Forever Brothers! 🔥</h2>
+
+      <p id="surpriseText">
+        No matter where life takes us,
+        the brotherhood stays strong.
+      </p>
+
+      <div class="stats">
+
+        <div>
+          <strong>∞</strong>
+          <span>Memories</span>
+        </div>
+
+        <div>
+          <strong>100%</strong>
+          <span>Loyalty</span>
+        </div>
+
+        <div>
+          <strong>24/7</strong>
+          <span>Support</span>
+        </div>
+
+      </div>
+
+      <button id="backBtn">
+        Back ↩
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- JavaScript -->
+
+  <script>
+
+    const broBtn = document.getElementById("broBtn");
+    const memoryBtn = document.getElementById("memoryBtn");
+
+    const message = document.getElementById("message");
+
+    const success = document.getElementById("success");
+
+    const backBtn = document.getElementById("backBtn");
+
+    const surpriseText =
+      document.getElementById("surpriseText");
+
+
+    /* Brotherhood messages */
+
+    const messages = [
+
+      "We may fight, roast each other, and argue over stupid things... but I've always got your back. 🤝",
+
+      "Different minds, same madness. That's what makes us brothers. 😂",
+
+      "No matter how far we go, the memories will always stay. 🖤",
+
+      "Brothers don't need to say much. One look is enough. 😎",
+
+      "Partners in crime, professional roasters, and brothers for life. 🔥"
+
+    ];
+
+
+    let messageIndex = 0;
+
+
+    /* Brotherhood button */
+
+    broBtn.addEventListener("click", function () {
+
+      success.classList.add("show");
+
+      createCelebration();
+
+    });
+
+
+    /* Memory button */
+
+    memoryBtn.addEventListener("click", function () {
+
+      messageIndex++;
+
+      if (messageIndex >= messages.length) {
+        messageIndex = 0;
+      }
+
+      message.textContent =
+        messages[messageIndex];
+
+      createFloatingEmoji();
+
+    });
+
+
+    /* Back button */
+
+    backBtn.addEventListener("click", function () {
+
+      success.classList.remove("show");
+
+      message.textContent =
+        messages[0];
+
+    });
+
+
+    /* Floating emoji */
+
+    function createFloatingEmoji() {
+
+      const emoji =
+        document.createElement("div");
+
+      emoji.classList.add("floating-emoji");
+
+      const emojis = [
+        "🤝",
+        "🔥",
+        "🖤",
+        "😎",
+        "💪",
+        "😂",
+        "👊"
+      ];
+
+      emoji.textContent =
+        emojis[
+          Math.floor(
+            Math.random() * emojis.length
+          )
+        ];
+
+      emoji.style.left =
+        Math.random() * 100 + "vw";
+
+      emoji.style.fontSize =
+        20 + Math.random() * 25 + "px";
+
+      emoji.style.animationDuration =
+        3 + Math.random() * 3 + "s";
+
+      document.body.appendChild(emoji);
+
+
+      setTimeout(function () {
+
+        emoji.remove();
+
+      }, 6000);
+
+    }
+
+
+    /* Celebration */
+
+    function createCelebration() {
+
+      for (let i = 0; i < 25; i++) {
+
+        setTimeout(function () {
+
+          createFloatingEmoji();
+
+        }, i * 100);
+
+      }
+
+    }
+
+
+    /* Automatic floating emojis */
+
+    setInterval(function () {
+
+      createFloatingEmoji();
+
+    }, 2000);
+
+  </script>
 
 </body>
 </html>
