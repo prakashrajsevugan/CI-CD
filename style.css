@@ -4,462 +4,143 @@
   box-sizing: border-box;
 }
 
+html,
 body {
-  min-height: 100vh;
+  width: 100%;
+  height: 100%;
+}
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  font-family: Arial, sans-serif;
-
-  color: white;
-
-  background:
-    radial-gradient(
-      circle at top,
-      #334155,
-      transparent 40%
-    ),
-    linear-gradient(
-      135deg,
-      #020617,
-      #111827,
-      #1e293b
-    );
-
+body {
   overflow: hidden;
+
+  background: #020b12;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
 }
 
-
-/* Main Card */
-
-.card {
-  width: 90%;
-  max-width: 520px;
-
-  padding: 50px 35px;
-
-  text-align: center;
-
-  background: rgba(255, 255, 255, 0.07);
-
-  border: 1px solid rgba(255, 255, 255, 0.15);
-
-  border-radius: 30px;
-
-  box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.4);
-
-  backdrop-filter: blur(18px);
-
-  position: relative;
-
-  z-index: 2;
-
-  animation: appear 0.8s ease;
-}
-
-
-/* Icon */
-
-.icon {
-  width: 90px;
-  height: 90px;
-
-  margin: 0 auto 25px;
-
-  display: flex;
-
-  justify-content: center;
-  align-items: center;
-
-  font-size: 45px;
-
-  background: rgba(255, 255, 255, 0.08);
-
-  border: 1px solid rgba(255, 255, 255, 0.15);
-
-  border-radius: 50%;
-
-  box-shadow:
-    0 15px 40px rgba(0, 0, 0, 0.25);
-
-  animation: pulse 2s infinite;
-}
-
-
-/* Text */
-
-.small-text {
-  color: #94a3b8;
-
-  font-size: 14px;
-
-  letter-spacing: 2px;
-
-  margin-bottom: 12px;
-}
-
-h1 {
-  color: white;
-
-  font-size: 46px;
-
-  line-height: 1.1;
-
-  margin-bottom: 20px;
-}
-
-h1 span {
-  color: #facc15;
-}
-
-.message {
-  max-width: 410px;
-
-  margin: auto;
-
-  color: #cbd5e1;
-
-  font-size: 16px;
-
-  line-height: 1.8;
-
-  transition: 0.3s;
-}
-
-
-/* Buttons */
-
-.buttons {
-  display: flex;
-
-  justify-content: center;
-
-  gap: 15px;
-
-  margin-top: 30px;
-
-  flex-wrap: wrap;
-}
-
-button {
-  padding: 13px 25px;
-
-  border: none;
-
-  border-radius: 50px;
-
-  font-size: 15px;
-
-  font-weight: bold;
-
-  cursor: pointer;
-
-  transition: 0.3s;
-}
-
-
-/* Brotherhood Button */
-
-.bro-btn {
-  color: #111827;
-
-  background: #facc15;
-
-  box-shadow:
-    0 8px 25px rgba(250, 204, 21, 0.25);
-}
-
-.bro-btn:hover {
-  transform: translateY(-4px) scale(1.05);
-
-  box-shadow:
-    0 12px 35px rgba(250, 204, 21, 0.35);
-}
-
-
-/* Memory Button */
-
-.memory-btn {
-  color: white;
-
-  background: rgba(255, 255, 255, 0.08);
-
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.memory-btn:hover {
-  transform: translateY(-4px);
-
-  background: rgba(255, 255, 255, 0.15);
-}
-
-
-/* Footer */
-
-.footer {
-  margin-top: 30px;
-
-  color: #64748b;
-
-  font-size: 12px;
-
-  letter-spacing: 1px;
-}
-
-
-/* Success Screen */
-
-.success {
+#scene {
   position: fixed;
 
   inset: 0;
 
-  display: none;
-
-  justify-content: center;
-  align-items: center;
-
-  background: rgba(2, 6, 23, 0.92);
-
-  backdrop-filter: blur(10px);
-
-  z-index: 20;
+  width: 100%;
+  height: 100%;
 }
 
-.success.show {
-  display: flex;
-
-  animation: fadeIn 0.4s ease;
+canvas {
+  display: block;
 }
 
 
-/* Success Card */
+/* ================================
+   HUD
+================================ */
 
-.success-card {
-  width: 90%;
+.hud {
+  position: fixed;
 
-  max-width: 450px;
+  left: 50%;
+  top: 43%;
 
-  padding: 45px 30px;
+  transform:
+    translate(-50%, -50%);
 
   text-align: center;
 
-  background: #111827;
-
-  border: 1px solid #374151;
-
-  border-radius: 30px;
-
-  box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.6);
-
-  animation: popup 0.5s ease;
-}
-
-.big-icon {
-  font-size: 70px;
-
-  animation: pulse 1.5s infinite;
-}
-
-.success-card h2 {
-  margin: 15px 0;
-
-  color: #facc15;
-
-  font-size: 32px;
-}
-
-.success-card p {
-  color: #cbd5e1;
-
-  line-height: 1.7;
-
-  margin-bottom: 25px;
-}
-
-
-/* Stats */
-
-.stats {
-  display: flex;
-
-  justify-content: center;
-
-  gap: 10px;
-
-  margin-bottom: 25px;
-}
-
-.stats div {
-  min-width: 95px;
-
-  padding: 15px 10px;
-
-  background: rgba(255, 255, 255, 0.06);
-
-  border-radius: 15px;
-}
-
-.stats strong {
-  display: block;
-
-  color: #facc15;
-
-  font-size: 20px;
-}
-
-.stats span {
-  display: block;
-
-  color: #94a3b8;
-
-  font-size: 11px;
-
-  margin-top: 5px;
-}
-
-
-/* Back Button */
-
-#backBtn {
-  color: #111827;
-
-  background: #facc15;
-}
-
-
-/* Floating Emojis */
-
-.floating-emoji {
-  position: fixed;
-
-  bottom: -50px;
-
   pointer-events: none;
+
+  color: white;
 
   z-index: 10;
 
-  animation:
-    floatUp 4s linear forwards;
+  user-select: none;
 }
 
 
-/* Animations */
+.hud span {
+  display: block;
 
-@keyframes pulse {
+  font-size: 10px;
 
-  0%,
-  100% {
-    transform: scale(1);
-  }
+  letter-spacing: 8px;
 
-  50% {
-    transform: scale(1.08);
-  }
+  color: #67eaff;
+
+  opacity: 0.85;
 }
 
 
-@keyframes floatUp {
+.hud h1 {
+  margin-top: 12px;
 
-  0% {
-    transform:
-      translateY(0)
-      rotate(0deg);
+  font-size:
+    clamp(55px, 9vw, 120px);
 
-    opacity: 1;
-  }
+  font-weight: 300;
 
-  100% {
-    transform:
-      translateY(-110vh)
-      rotate(360deg);
+  letter-spacing: 25px;
 
-    opacity: 0;
-  }
+  margin-left: 25px;
+
+  color: #eaffff;
+
+  text-shadow:
+    0 0 10px #00eaff,
+    0 0 30px #00cfff,
+    0 0 70px #007b99;
 }
 
 
-@keyframes appear {
+.line {
+  width: 120px;
 
-  from {
-    opacity: 0;
+  height: 1px;
 
-    transform:
-      translateY(30px)
-      scale(0.95);
-  }
+  margin:
+    18px auto;
 
-  to {
-    opacity: 1;
+  background: #00eaff;
 
-    transform:
-      translateY(0)
-      scale(1);
-  }
+  box-shadow:
+    0 0 15px #00eaff,
+    0 0 30px #00eaff;
 }
 
 
-@keyframes fadeIn {
+.hud p {
+  font-size: 9px;
 
-  from {
-    opacity: 0;
-  }
+  letter-spacing: 6px;
 
-  to {
-    opacity: 1;
-  }
+  color: #71909a;
+
+  margin-left: 6px;
 }
 
 
-@keyframes popup {
+/* ================================
+   MOBILE
+================================ */
 
-  from {
-    opacity: 0;
+@media (max-width: 600px) {
 
-    transform: scale(0.7);
+  .hud h1 {
+    font-size: 55px;
+
+    letter-spacing: 12px;
+
+    margin-left: 12px;
   }
 
-  to {
-    opacity: 1;
-
-    transform: scale(1);
-  }
-}
-
-
-/* Mobile */
-
-@media (max-width: 500px) {
-
-  .card {
-    padding: 40px 25px;
+  .hud span {
+    letter-spacing: 5px;
   }
 
-  h1 {
-    font-size: 36px;
+  .hud p {
+    letter-spacing: 3px;
   }
 
-  .message {
-    font-size: 15px;
-  }
-
-  .buttons {
-    flex-direction: column;
-  }
-
-  button {
-    width: 100%;
-  }
-
-  .stats {
-    gap: 5px;
-  }
-
-  .stats div {
-    min-width: 80px;
-  }
 }
