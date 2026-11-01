@@ -1,1124 +1,1323 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-  <title>3D Forest World</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
 
-  <link rel="stylesheet" href="style.css">
+    <title>3D Forest World</title>
 
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.181.2/build/three.module.js"
+    <link rel="stylesheet" href="style.css">
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.181.2/build/three.module.js"
+        }
     }
-  }
-  </script>
+    </script>
 </head>
 
 <body>
 
-<div id="scene"></div>
+    <div id="scene"></div>
 
-<div class="hud">
-  <span>PROCEDURAL WORLD</span>
-  <h1>FOREST</h1>
-  <div class="line"></div>
-  <p>WASD / ARROWS TO EXPLORE</p>
-</div>
+    <!-- HUD -->
+    <div class="hud">
 
+        <span>PROCEDURAL WORLD</span>
 
-<script type="module">
+        <h1>FOREST</h1>
 
-import * as THREE from "three";
+        <div class="line"></div>
 
+        <p class="desktop-help">
+            WASD / ARROWS TO EXPLORE
+        </p>
 
-// ============================================================
-// SCENE
-// ============================================================
+        <p class="mobile-help">
+            DRAG JOYSTICK TO EXPLORE
+        </p>
 
-const scene = new THREE.Scene();
+    </div>
 
-scene.background =
-  new THREE.Color(0x9cc9d1);
 
-scene.fog =
-  new THREE.Fog(
-    0x9cc9d1,
-    25,
-    90
-  );
+    <!-- MOBILE CONTROLS -->
+    <div class="mobile-controls">
 
+        <div
+            class="joystick"
+            id="joystick"
+        >
 
-// ============================================================
-// CAMERA
-// ============================================================
+            <div
+                class="joystick-knob"
+                id="joystickKnob"
+            ></div>
 
-const camera =
-  new THREE.PerspectiveCamera(
-    60,
-    window.innerWidth /
-    window.innerHeight,
-    0.1,
-    200
-  );
+        </div>
 
-camera.position.set(
-  0,
-  5,
-  10
-);
+    </div>
 
 
-// ============================================================
-// RENDERER
-// ============================================================
+    <script type="module">
 
-const renderer =
-  new THREE.WebGLRenderer({
-    antialias: true
-  });
+        import * as THREE from "three";
 
-renderer.setSize(
-  window.innerWidth,
-  window.innerHeight
-);
 
-renderer.setPixelRatio(
-  Math.min(
-    window.devicePixelRatio,
-    2
-  )
-);
+        // ============================================================
+        // SCENE
+        // ============================================================
 
-renderer.shadowMap.enabled = true;
+        const scene = new THREE.Scene();
 
-renderer.shadowMap.type =
-  THREE.PCFSoftShadowMap;
+        scene.background =
+            new THREE.Color(0x9cc9d1);
 
-renderer.outputColorSpace =
-  THREE.SRGBColorSpace;
+        scene.fog =
+            new THREE.Fog(
+                0x9cc9d1,
+                25,
+                90
+            );
 
-document
-  .getElementById("scene")
-  .appendChild(renderer.domElement);
 
+        // ============================================================
+        // CAMERA
+        // ============================================================
 
-// ============================================================
-// LIGHTING
-// ============================================================
+        const camera =
+            new THREE.PerspectiveCamera(
+                60,
+                window.innerWidth /
+                window.innerHeight,
+                0.1,
+                200
+            );
 
-const ambient =
-  new THREE.HemisphereLight(
-    0xbdefff,
-    0x28401f,
-    2.2
-  );
+        camera.position.set(
+            0,
+            5,
+            10
+        );
 
-scene.add(ambient);
 
+        // ============================================================
+        // RENDERER
+        // ============================================================
 
-const sun =
-  new THREE.DirectionalLight(
-    0xfff0c2,
-    3.5
-  );
+        const renderer =
+            new THREE.WebGLRenderer({
+                antialias: true
+            });
 
-sun.position.set(
-  -30,
-  45,
-  -25
-);
+        renderer.setSize(
+            window.innerWidth,
+            window.innerHeight
+        );
 
-sun.castShadow = true;
-
-sun.shadow.mapSize.width = 2048;
-sun.shadow.mapSize.height = 2048;
-
-sun.shadow.camera.left = -45;
-sun.shadow.camera.right = 45;
-sun.shadow.camera.top = 45;
-sun.shadow.camera.bottom = -45;
-
-sun.shadow.camera.near = 1;
-sun.shadow.camera.far = 120;
-
-scene.add(sun);
-
-
-// ============================================================
-// TERRAIN
-// ============================================================
-
-const terrainSize = 90;
-const terrainSegments = 120;
-
-
-function terrainHeight(x, z) {
-
-  let h = 0;
-
-  h +=
-    Math.sin(x * 0.09) *
-    Math.cos(z * 0.08) *
-    1.2;
-
-  h +=
-    Math.sin(
-      x * 0.19 +
-      z * 0.13
-    ) * 0.45;
-
-  h +=
-    Math.cos(
-      x * 0.32 -
-      z * 0.21
-    ) * 0.2;
-
-  const distance =
-    Math.sqrt(
-      x * x +
-      z * z
-    );
-
-  h +=
-    Math.max(
-      0,
-      distance - 25
-    ) * 0.025;
-
-  return h;
-}
-
-
-const terrainGeometry =
-  new THREE.PlaneGeometry(
-    terrainSize,
-    terrainSize,
-    terrainSegments,
-    terrainSegments
-  );
-
-terrainGeometry.rotateX(
-  -Math.PI / 2
-);
-
-
-const terrainPositions =
-  terrainGeometry.attributes.position;
-
-
-for (
-  let i = 0;
-  i < terrainPositions.count;
-  i++
-) {
-
-  const x =
-    terrainPositions.getX(i);
-
-  const z =
-    terrainPositions.getZ(i);
-
-  terrainPositions.setY(
-    i,
-    terrainHeight(x, z)
-  );
-
-}
-
-
-terrainGeometry.computeVertexNormals();
-
-
-const terrainMaterial =
-  new THREE.MeshStandardMaterial({
-
-    color: 0x426b32,
-
-    roughness: 1,
-
-    metalness: 0
-
-  });
-
-
-const terrain =
-  new THREE.Mesh(
-    terrainGeometry,
-    terrainMaterial
-  );
-
-terrain.receiveShadow = true;
-
-scene.add(terrain);
-
-
-// ============================================================
-// GRASS
-// ============================================================
-
-const grassMaterial =
-  new THREE.MeshStandardMaterial({
-
-    color: 0x5c8c3d,
-
-    roughness: 1,
-
-    side: THREE.DoubleSide
-
-  });
-
-
-const grassGeometry =
-  new THREE.BufferGeometry();
-
-
-const grassPositions = [];
-const grassSizes = [];
-
-
-for (
-  let i = 0;
-  i < 2500;
-  i++
-) {
-
-  const x =
-    (Math.random() - 0.5) *
-    82;
-
-  const z =
-    (Math.random() - 0.5) *
-    82;
-
-  const y =
-    terrainHeight(
-      x,
-      z
-    );
-
-  grassPositions.push(
-    x,
-    y,
-    z
-  );
-
-  grassSizes.push(
-    0.15 +
-    Math.random() * 0.35
-  );
-
-}
-
-
-grassGeometry.setAttribute(
-  "position",
-  new THREE.Float32BufferAttribute(
-    grassPositions,
-    3
-  )
-);
-
-
-const grass =
-  new THREE.Points(
-    grassGeometry,
-    new THREE.PointsMaterial({
-
-      color: 0x79a84d,
-
-      size: 0.18,
-
-      sizeAttenuation: true
-
-    })
-  );
-
-scene.add(grass);
-
-
-// ============================================================
-// TREE MATERIALS
-// ============================================================
-
-const trunkMaterial =
-  new THREE.MeshStandardMaterial({
-    color: 0x4b2d19,
-    roughness: 1
-  });
-
-
-const leafMaterials = [
-
-  new THREE.MeshStandardMaterial({
-    color: 0x234f25,
-    roughness: 1
-  }),
-
-  new THREE.MeshStandardMaterial({
-    color: 0x326b2d,
-    roughness: 1
-  }),
-
-  new THREE.MeshStandardMaterial({
-    color: 0x3f7d32,
-    roughness: 1
-  }),
-
-  new THREE.MeshStandardMaterial({
-    color: 0x1d4725,
-    roughness: 1
-  })
-
-];
-
-
-// ============================================================
-// TREE CREATION
-// ============================================================
-
-function createTree(
-  x,
-  z,
-  scale = 1
-) {
-
-  const tree =
-    new THREE.Group();
-
-
-  // ----------------------------------------------------------
-  // TRUNK
-  // ----------------------------------------------------------
-
-  const trunk =
-    new THREE.Mesh(
-      new THREE.CylinderGeometry(
-        0.18,
-        0.3,
-        3.5,
-        8
-      ),
-      trunkMaterial
-    );
-
-  trunk.position.y =
-    1.75;
-
-  trunk.scale.set(
-    scale,
-    scale,
-    scale
-  );
-
-  trunk.castShadow = true;
-  trunk.receiveShadow = true;
-
-  tree.add(trunk);
-
-
-  // ----------------------------------------------------------
-  // TREE TOPS
-  // ----------------------------------------------------------
-
-  const leafCount = 4;
-
-
-  for (
-    let i = 0;
-    i < leafCount;
-    i++
-  ) {
-
-    const size =
-      (1.5 -
-      i * 0.18) *
-      scale;
-
-
-    const leaves =
-      new THREE.Mesh(
-        new THREE.IcosahedronGeometry(
-          size,
-          1
-        ),
-        leafMaterials[
-          Math.floor(
-            Math.random() *
-            leafMaterials.length
-          )
-        ]
-      );
-
-
-    leaves.position.y =
-      (
-        3.1 +
-        i * 0.75
-      ) *
-      scale;
-
-
-    leaves.position.x =
-      (
-        Math.random() -
-        0.5
-      ) *
-      0.35 *
-      scale;
-
-
-    leaves.position.z =
-      (
-        Math.random() -
-        0.5
-      ) *
-      0.35 *
-      scale;
-
-
-    leaves.scale.y =
-      0.8;
-
-
-    leaves.castShadow = true;
-    leaves.receiveShadow = true;
-
-    tree.add(leaves);
-
-  }
-
-
-  tree.position.set(
-    x,
-    terrainHeight(x, z),
-    z
-  );
-
-
-  tree.rotation.y =
-    Math.random() *
-    Math.PI * 2;
-
-
-  scene.add(tree);
-
-}
-
-
-// ============================================================
-// FOREST
-// ============================================================
-
-for (
-  let i = 0;
-  i < 130;
-  i++
-) {
-
-  const x =
-    (
-      Math.random() -
-      0.5
-    ) * 78;
-
-  const z =
-    (
-      Math.random() -
-      0.5
-    ) * 78;
-
-
-  const distance =
-    Math.sqrt(
-      x * x +
-      z * z
-    );
-
-
-  // Keep central area open
-
-  if (
-    distance < 10
-  ) {
-
-    continue;
-
-  }
-
-
-  const scale =
-    0.75 +
-    Math.random() *
-    0.8;
-
-
-  createTree(
-    x,
-    z,
-    scale
-  );
-
-}
-
-
-// ============================================================
-// ROCKS
-// ============================================================
-
-const rockMaterial =
-  new THREE.MeshStandardMaterial({
-    color: 0x555c4e,
-    roughness: 1
-  });
-
-
-for (
-  let i = 0;
-  i < 55;
-  i++
-) {
-
-  const x =
-    (
-      Math.random() -
-      0.5
-    ) * 80;
-
-  const z =
-    (
-      Math.random() -
-      0.5
-    ) * 80;
-
-
-  const rock =
-    new THREE.Mesh(
-      new THREE.DodecahedronGeometry(
-        0.2 +
-        Math.random() * 0.6,
-        0
-      ),
-      rockMaterial
-    );
-
-
-  rock.position.set(
-    x,
-    terrainHeight(
-      x,
-      z
-    ) + 0.2,
-    z
-  );
-
-
-  rock.scale.y =
-    0.5 +
-    Math.random() * 0.6;
-
-
-  rock.rotation.set(
-    Math.random(),
-    Math.random(),
-    Math.random()
-  );
-
-
-  rock.castShadow = true;
-
-  scene.add(rock);
-
-}
-
-
-// ============================================================
-// FLOWER / SMALL PLANTS
-// ============================================================
-
-const flowerColors = [
-  0xe5c85c,
-  0xe58d8d,
-  0xc78de5,
-  0xf0e8c0
-];
-
-
-for (
-  let i = 0;
-  i < 300;
-  i++
-) {
-
-  const x =
-    (
-      Math.random() -
-      0.5
-    ) * 75;
-
-  const z =
-    (
-      Math.random() -
-      0.5
-    ) * 75;
-
-
-  if (
-    Math.sqrt(
-      x * x +
-      z * z
-    ) < 7
-  ) {
-
-    continue;
-
-  }
-
-
-  const flower =
-    new THREE.Mesh(
-      new THREE.SphereGeometry(
-        0.05,
-        6,
-        6
-      ),
-      new THREE.MeshBasicMaterial({
-        color:
-          flowerColors[
-            Math.floor(
-              Math.random() *
-              flowerColors.length
+        renderer.setPixelRatio(
+            Math.min(
+                window.devicePixelRatio,
+                2
             )
-          ]
-      })
-    );
+        );
 
+        renderer.shadowMap.enabled = true;
 
-  flower.position.set(
-    x,
-    terrainHeight(x, z) +
-    0.35,
-    z
-  );
+        renderer.shadowMap.type =
+            THREE.PCFSoftShadowMap;
 
+        renderer.outputColorSpace =
+            THREE.SRGBColorSpace;
 
-  scene.add(flower);
+        document
+            .getElementById("scene")
+            .appendChild(renderer.domElement);
 
-}
 
+        // ============================================================
+        // LIGHTING
+        // ============================================================
 
-// ============================================================
-// PATH
-// ============================================================
+        const ambient =
+            new THREE.HemisphereLight(
+                0xbdefff,
+                0x28401f,
+                2.2
+            );
 
-const pathMaterial =
-  new THREE.MeshStandardMaterial({
-    color: 0x96794c,
-    roughness: 1
-  });
+        scene.add(ambient);
 
 
-const pathGeometry =
-  new THREE.PlaneGeometry(
-    5,
-    70
-  );
+        const sun =
+            new THREE.DirectionalLight(
+                0xfff0c2,
+                3.5
+            );
 
-pathGeometry.rotateX(
-  -Math.PI / 2
-);
+        sun.position.set(
+            -30,
+            45,
+            -25
+        );
 
+        sun.castShadow = true;
 
-const path =
-  new THREE.Mesh(
-    pathGeometry,
-    pathMaterial
-  );
+        sun.shadow.mapSize.width = 2048;
+        sun.shadow.mapSize.height = 2048;
 
+        sun.shadow.camera.left = -45;
+        sun.shadow.camera.right = 45;
+        sun.shadow.camera.top = 45;
+        sun.shadow.camera.bottom = -45;
 
-path.position.y =
-  0.08;
+        sun.shadow.camera.near = 1;
+        sun.shadow.camera.far = 120;
 
+        scene.add(sun);
 
-path.receiveShadow = true;
 
-scene.add(path);
+        // ============================================================
+        // TERRAIN
+        // ============================================================
 
+        const terrainSize = 90;
+        const terrainSegments = 120;
 
-// ============================================================
-// PLAYER
-// ============================================================
 
-const player =
-  new THREE.Group();
+        function terrainHeight(x, z) {
 
-scene.add(player);
+            let h = 0;
 
+            h +=
+                Math.sin(x * 0.09) *
+                Math.cos(z * 0.08) *
+                1.2;
 
-const playerBody =
-  new THREE.Mesh(
-    new THREE.CapsuleGeometry(
-      0.35,
-      0.8,
-      6,
-      12
-    ),
-    new THREE.MeshStandardMaterial({
-      color: 0x263e5c
-    })
-  );
+            h +=
+                Math.sin(
+                    x * 0.19 +
+                    z * 0.13
+                ) * 0.45;
 
-playerBody.position.y =
-  0.9;
+            h +=
+                Math.cos(
+                    x * 0.32 -
+                    z * 0.21
+                ) * 0.2;
 
-playerBody.castShadow = true;
+            const distance =
+                Math.sqrt(
+                    x * x +
+                    z * z
+                );
 
-player.add(playerBody);
+            h +=
+                Math.max(
+                    0,
+                    distance - 25
+                ) * 0.025;
 
+            return h;
+        }
 
-const playerHead =
-  new THREE.Mesh(
-    new THREE.SphereGeometry(
-      0.28,
-      16,
-      16
-    ),
-    new THREE.MeshStandardMaterial({
-      color: 0xc58e6a
-    })
-  );
 
-playerHead.position.y =
-  1.65;
+        const terrainGeometry =
+            new THREE.PlaneGeometry(
+                terrainSize,
+                terrainSize,
+                terrainSegments,
+                terrainSegments
+            );
 
-playerHead.castShadow = true;
+        terrainGeometry.rotateX(
+            -Math.PI / 2
+        );
 
-player.add(playerHead);
 
+        const terrainPositions =
+            terrainGeometry.attributes.position;
 
-player.position.set(
-  0,
-  terrainHeight(0, 0),
-  8
-);
 
+        for (
+            let i = 0;
+            i < terrainPositions.count;
+            i++
+        ) {
 
-// ============================================================
-// KEYBOARD
-// ============================================================
+            const x =
+                terrainPositions.getX(i);
 
-const keys = {};
+            const z =
+                terrainPositions.getZ(i);
 
-window.addEventListener(
-  "keydown",
-  (event) => {
+            terrainPositions.setY(
+                i,
+                terrainHeight(x, z)
+            );
+        }
 
-    keys[
-      event.key.toLowerCase()
-    ] = true;
 
-  }
-);
+        terrainGeometry.computeVertexNormals();
 
 
-window.addEventListener(
-  "keyup",
-  (event) => {
+        const terrainMaterial =
+            new THREE.MeshStandardMaterial({
+                color: 0x426b32,
+                roughness: 1,
+                metalness: 0
+            });
 
-    keys[
-      event.key.toLowerCase()
-    ] = false;
 
-  }
-);
+        const terrain =
+            new THREE.Mesh(
+                terrainGeometry,
+                terrainMaterial
+            );
 
+        terrain.receiveShadow = true;
 
-// ============================================================
-// MOVEMENT
-// ============================================================
+        scene.add(terrain);
 
-const clock =
-  new THREE.Clock();
 
+        // ============================================================
+        // GRASS
+        // ============================================================
 
-let playerSpeed = 0;
+        const grassMaterial =
+            new THREE.MeshStandardMaterial({
+                color: 0x5c8c3d,
+                roughness: 1,
+                side: THREE.DoubleSide
+            });
 
-const maxSpeed = 5;
 
-const acceleration = 10;
+        const grassGeometry =
+            new THREE.BufferGeometry();
 
-const turnSpeed = 2.8;
+        const grassPositions = [];
+        const grassSizes = [];
 
 
-function updatePlayer(
-  delta
-) {
+        for (
+            let i = 0;
+            i < 2500;
+            i++
+        ) {
 
-  const forward =
-    keys["w"] ||
-    keys["arrowup"];
+            const x =
+                (Math.random() - 0.5) *
+                82;
 
-  const backward =
-    keys["s"] ||
-    keys["arrowdown"];
+            const z =
+                (Math.random() - 0.5) *
+                82;
 
-  const left =
-    keys["a"] ||
-    keys["arrowleft"];
+            const y =
+                terrainHeight(
+                    x,
+                    z
+                );
 
-  const right =
-    keys["d"] ||
-    keys["arrowright"];
+            grassPositions.push(
+                x,
+                y,
+                z
+            );
 
+            grassSizes.push(
+                0.15 +
+                Math.random() * 0.35
+            );
+        }
 
-  // ----------------------------------------------------------
-  // SPEED
-  // ----------------------------------------------------------
 
-  if (forward) {
+        grassGeometry.setAttribute(
+            "position",
+            new THREE.Float32BufferAttribute(
+                grassPositions,
+                3
+            )
+        );
 
-    playerSpeed +=
-      acceleration *
-      delta;
 
-  }
-  else if (backward) {
+        const grass =
+            new THREE.Points(
+                grassGeometry,
+                new THREE.PointsMaterial({
+                    color: 0x79a84d,
+                    size: 0.18,
+                    sizeAttenuation: true
+                })
+            );
 
-    playerSpeed -=
-      acceleration *
-      delta;
+        scene.add(grass);
 
-  }
-  else {
 
-    playerSpeed =
-      THREE.MathUtils.damp(
-        playerSpeed,
-        0,
-        8,
-        delta
-      );
+        // ============================================================
+        // TREE MATERIALS
+        // ============================================================
 
-  }
+        const trunkMaterial =
+            new THREE.MeshStandardMaterial({
+                color: 0x4b2d19,
+                roughness: 1
+            });
 
 
-  playerSpeed =
-    THREE.MathUtils.clamp(
-      playerSpeed,
-      -2,
-      maxSpeed
-    );
+        const leafMaterials = [
 
+            new THREE.MeshStandardMaterial({
+                color: 0x234f25,
+                roughness: 1
+            }),
 
-  // ----------------------------------------------------------
-  // TURN
-  // ----------------------------------------------------------
+            new THREE.MeshStandardMaterial({
+                color: 0x326b2d,
+                roughness: 1
+            }),
 
-  if (left) {
+            new THREE.MeshStandardMaterial({
+                color: 0x3f7d32,
+                roughness: 1
+            }),
 
-    player.rotation.y +=
-      turnSpeed *
-      delta;
+            new THREE.MeshStandardMaterial({
+                color: 0x1d4725,
+                roughness: 1
+            })
 
-  }
+        ];
 
 
-  if (right) {
+        // ============================================================
+        // TREE CREATION
+        // ============================================================
 
-    player.rotation.y -=
-      turnSpeed *
-      delta;
+        function createTree(
+            x,
+            z,
+            scale = 1
+        ) {
 
-  }
+            const tree =
+                new THREE.Group();
 
 
-  // ----------------------------------------------------------
-  // MOVE
-  // ----------------------------------------------------------
+            // TRUNK
 
-  const direction =
-    new THREE.Vector3(
-      0,
-      0,
-      -1
-    );
+            const trunk =
+                new THREE.Mesh(
 
+                    new THREE.CylinderGeometry(
+                        0.18,
+                        0.3,
+                        3.5,
+                        8
+                    ),
 
-  direction.applyQuaternion(
-    player.quaternion
-  );
+                    trunkMaterial
+                );
 
 
-  player.position.add(
-    direction.multiplyScalar(
-      playerSpeed *
-      delta
-    )
-  );
+            trunk.position.y =
+                1.75;
 
+            trunk.scale.set(
+                scale,
+                scale,
+                scale
+            );
 
-  // ----------------------------------------------------------
-  // TERRAIN HEIGHT
-  // ----------------------------------------------------------
+            trunk.castShadow = true;
+            trunk.receiveShadow = true;
 
-  const ground =
-    terrainHeight(
-      player.position.x,
-      player.position.z
-    );
+            tree.add(trunk);
 
 
-  player.position.y =
-    ground;
+            // LEAVES
 
+            const leafCount = 4;
 
-  // ----------------------------------------------------------
-  // WORLD LIMIT
-  // ----------------------------------------------------------
 
-  player.position.x =
-    THREE.MathUtils.clamp(
-      player.position.x,
-      -42,
-      42
-    );
+            for (
+                let i = 0;
+                i < leafCount;
+                i++
+            ) {
 
+                const size =
+                    (
+                        1.5 -
+                        i * 0.18
+                    ) * scale;
 
-  player.position.z =
-    THREE.MathUtils.clamp(
-      player.position.z,
-      -42,
-      42
-    );
 
-}
+                const leaves =
+                    new THREE.Mesh(
 
+                        new THREE.IcosahedronGeometry(
+                            size,
+                            1
+                        ),
 
-// ============================================================
-// CAMERA FOLLOW
-// ============================================================
+                        leafMaterials[
+                            Math.floor(
+                                Math.random() *
+                                leafMaterials.length
+                            )
+                        ]
 
-const cameraOffset =
-  new THREE.Vector3(
-    0,
-    5,
-    8
-  );
+                    );
 
 
-const cameraTarget =
-  new THREE.Vector3();
+                leaves.position.y =
+                    (
+                        3.1 +
+                        i * 0.75
+                    ) * scale;
 
 
-function updateCamera(
-  delta
-) {
+                leaves.position.x =
+                    (
+                        Math.random() - 0.5
+                    ) *
+                    0.35 *
+                    scale;
 
-  const offset =
-    cameraOffset.clone();
 
+                leaves.position.z =
+                    (
+                        Math.random() - 0.5
+                    ) *
+                    0.35 *
+                    scale;
 
-  offset.applyQuaternion(
-    player.quaternion
-  );
 
+                leaves.scale.y = 0.8;
 
-  const desired =
-    player.position
-      .clone()
-      .add(offset);
+                leaves.castShadow = true;
+                leaves.receiveShadow = true;
 
+                tree.add(leaves);
+            }
 
-  camera.position.lerp(
-    desired,
-    1 -
-    Math.pow(
-      0.001,
-      delta
-    )
-  );
 
+            tree.position.set(
+                x,
+                terrainHeight(x, z),
+                z
+            );
 
-  cameraTarget.copy(
-    player.position
-  );
 
+            tree.rotation.y =
+                Math.random() *
+                Math.PI * 2;
 
-  cameraTarget.y +=
-    1.1;
+            scene.add(tree);
+        }
 
 
-  camera.lookAt(
-    cameraTarget
-  );
+        // ============================================================
+        // FOREST
+        // ============================================================
 
-}
+        for (
+            let i = 0;
+            i < 130;
+            i++
+        ) {
 
+            const x =
+                (
+                    Math.random() - 0.5
+                ) * 78;
 
-// ============================================================
-// ANIMATION
-// ============================================================
+            const z =
+                (
+                    Math.random() - 0.5
+                ) * 78;
 
-function animate() {
 
-  requestAnimationFrame(
-    animate
-  );
+            const distance =
+                Math.sqrt(
+                    x * x +
+                    z * z
+                );
 
 
-  const delta =
-    Math.min(
-      clock.getDelta(),
-      0.05
-    );
+            if (distance < 10) {
+                continue;
+            }
 
 
-  updatePlayer(
-    delta
-  );
+            const scale =
+                0.75 +
+                Math.random() * 0.8;
 
 
-  updateCamera(
-    delta
-  );
+            createTree(
+                x,
+                z,
+                scale
+            );
+        }
 
 
-  renderer.render(
-    scene,
-    camera
-  );
+        // ============================================================
+        // ROCKS
+        // ============================================================
 
-}
+        const rockMaterial =
+            new THREE.MeshStandardMaterial({
+                color: 0x555c4e,
+                roughness: 1
+            });
 
 
-animate();
+        for (
+            let i = 0;
+            i < 55;
+            i++
+        ) {
 
+            const x =
+                (
+                    Math.random() - 0.5
+                ) * 80;
 
-// ============================================================
-// RESIZE
-// ============================================================
+            const z =
+                (
+                    Math.random() - 0.5
+                ) * 80;
 
-window.addEventListener(
-  "resize",
-  () => {
 
-    camera.aspect =
-      window.innerWidth /
-      window.innerHeight;
+            const rock =
+                new THREE.Mesh(
 
-    camera.updateProjectionMatrix();
+                    new THREE.DodecahedronGeometry(
+                        0.2 +
+                        Math.random() * 0.6,
+                        0
+                    ),
 
-    renderer.setSize(
-      window.innerWidth,
-      window.innerHeight
-    );
+                    rockMaterial
+                );
 
-  }
-);
 
-</script>
+            rock.position.set(
+                x,
+                terrainHeight(x, z) + 0.2,
+                z
+            );
+
+
+            rock.scale.y =
+                0.5 +
+                Math.random() * 0.6;
+
+
+            rock.rotation.set(
+                Math.random(),
+                Math.random(),
+                Math.random()
+            );
+
+
+            rock.castShadow = true;
+
+            scene.add(rock);
+        }
+
+
+        // ============================================================
+        // FLOWERS
+        // ============================================================
+
+        const flowerColors = [
+            0xe5c85c,
+            0xe58d8d,
+            0xc78de5,
+            0xf0e8c0
+        ];
+
+
+        for (
+            let i = 0;
+            i < 300;
+            i++
+        ) {
+
+            const x =
+                (
+                    Math.random() - 0.5
+                ) * 75;
+
+            const z =
+                (
+                    Math.random() - 0.5
+                ) * 75;
+
+
+            if (
+                Math.sqrt(
+                    x * x +
+                    z * z
+                ) < 7
+            ) {
+                continue;
+            }
+
+
+            const flower =
+                new THREE.Mesh(
+
+                    new THREE.SphereGeometry(
+                        0.05,
+                        6,
+                        6
+                    ),
+
+                    new THREE.MeshBasicMaterial({
+                        color:
+                            flowerColors[
+                                Math.floor(
+                                    Math.random() *
+                                    flowerColors.length
+                                )
+                            ]
+                    })
+
+                );
+
+
+            flower.position.set(
+                x,
+                terrainHeight(x, z) + 0.35,
+                z
+            );
+
+            scene.add(flower);
+        }
+
+
+        // ============================================================
+        // PATH
+        // ============================================================
+
+        const pathMaterial =
+            new THREE.MeshStandardMaterial({
+                color: 0x96794c,
+                roughness: 1
+            });
+
+
+        const pathGeometry =
+            new THREE.PlaneGeometry(
+                5,
+                70
+            );
+
+        pathGeometry.rotateX(
+            -Math.PI / 2
+        );
+
+
+        const path =
+            new THREE.Mesh(
+                pathGeometry,
+                pathMaterial
+            );
+
+        path.position.y =
+            0.08;
+
+        path.receiveShadow = true;
+
+        scene.add(path);
+
+
+        // ============================================================
+        // PLAYER
+        // ============================================================
+
+        const player =
+            new THREE.Group();
+
+        scene.add(player);
+
+
+        const playerBody =
+            new THREE.Mesh(
+
+                new THREE.CapsuleGeometry(
+                    0.35,
+                    0.8,
+                    6,
+                    12
+                ),
+
+                new THREE.MeshStandardMaterial({
+                    color: 0x263e5c
+                })
+
+            );
+
+
+        playerBody.position.y =
+            0.9;
+
+        playerBody.castShadow = true;
+
+        player.add(playerBody);
+
+
+        const playerHead =
+            new THREE.Mesh(
+
+                new THREE.SphereGeometry(
+                    0.28,
+                    16,
+                    16
+                ),
+
+                new THREE.MeshStandardMaterial({
+                    color: 0xc58e6a
+                })
+
+            );
+
+
+        playerHead.position.y =
+            1.65;
+
+        playerHead.castShadow = true;
+
+        player.add(playerHead);
+
+
+        player.position.set(
+            0,
+            terrainHeight(0, 8),
+            8
+        );
+
+
+        // ============================================================
+        // KEYBOARD
+        // ============================================================
+
+        const keys = {};
+
+
+        window.addEventListener(
+            "keydown",
+            (event) => {
+
+                keys[
+                    event.key.toLowerCase()
+                ] = true;
+
+            }
+        );
+
+
+        window.addEventListener(
+            "keyup",
+            (event) => {
+
+                keys[
+                    event.key.toLowerCase()
+                ] = false;
+
+            }
+        );
+
+
+        // ============================================================
+        // MOBILE JOYSTICK
+        // ============================================================
+
+        const joystick =
+            document.getElementById(
+                "joystick"
+            );
+
+        const joystickKnob =
+            document.getElementById(
+                "joystickKnob"
+            );
+
+
+        let joystickActive = false;
+        let joystickX = 0;
+        let joystickY = 0;
+        let joystickPointerId = null;
+
+
+        function updateJoystick(
+            clientX,
+            clientY
+        ) {
+
+            const rect =
+                joystick.getBoundingClientRect();
+
+
+            const centerX =
+                rect.left +
+                rect.width / 2;
+
+            const centerY =
+                rect.top +
+                rect.height / 2;
+
+
+            let dx =
+                clientX - centerX;
+
+            let dy =
+                clientY - centerY;
+
+
+            const maxDistance =
+                rect.width / 2 - 30;
+
+
+            const distance =
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                );
+
+
+            if (
+                distance >
+                maxDistance
+            ) {
+
+                const angle =
+                    Math.atan2(
+                        dy,
+                        dx
+                    );
+
+                dx =
+                    Math.cos(angle) *
+                    maxDistance;
+
+                dy =
+                    Math.sin(angle) *
+                    maxDistance;
+            }
+
+
+            joystickX =
+                dx / maxDistance;
+
+            joystickY =
+                dy / maxDistance;
+
+
+            joystickKnob.style.transform =
+                `translate(
+                    calc(-50% + ${dx}px),
+                    calc(-50% + ${dy}px)
+                )`;
+        }
+
+
+        joystick.addEventListener(
+            "pointerdown",
+            (event) => {
+
+                event.preventDefault();
+
+                joystickActive = true;
+
+                joystickPointerId =
+                    event.pointerId;
+
+                joystick.setPointerCapture(
+                    event.pointerId
+                );
+
+                updateJoystick(
+                    event.clientX,
+                    event.clientY
+                );
+            }
+        );
+
+
+        joystick.addEventListener(
+            "pointermove",
+            (event) => {
+
+                if (
+                    !joystickActive ||
+                    event.pointerId !==
+                    joystickPointerId
+                ) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                updateJoystick(
+                    event.clientX,
+                    event.clientY
+                );
+            }
+        );
+
+
+        function releaseJoystick() {
+
+            joystickActive = false;
+
+            joystickPointerId = null;
+
+            joystickX = 0;
+            joystickY = 0;
+
+            joystickKnob.style.transform =
+                "translate(-50%, -50%)";
+        }
+
+
+        joystick.addEventListener(
+            "pointerup",
+            releaseJoystick
+        );
+
+        joystick.addEventListener(
+            "pointercancel",
+            releaseJoystick
+        );
+
+        joystick.addEventListener(
+            "lostpointercapture",
+            releaseJoystick
+        );
+
+
+        // ============================================================
+        // MOVEMENT
+        // ============================================================
+
+        const clock =
+            new THREE.Clock();
+
+        let playerSpeed = 0;
+
+        const maxSpeed = 5;
+        const acceleration = 10;
+        const turnSpeed = 2.8;
+
+
+        function updatePlayer(delta) {
+
+            // KEYBOARD
+
+            const keyboardForward =
+                keys["w"] ||
+                keys["arrowup"];
+
+            const keyboardBackward =
+                keys["s"] ||
+                keys["arrowdown"];
+
+            const keyboardLeft =
+                keys["a"] ||
+                keys["arrowleft"];
+
+            const keyboardRight =
+                keys["d"] ||
+                keys["arrowright"];
+
+
+            // MOBILE
+
+            const mobileForward =
+                joystickActive &&
+                joystickY < -0.15;
+
+            const mobileBackward =
+                joystickActive &&
+                joystickY > 0.15;
+
+            const mobileLeft =
+                joystickActive &&
+                joystickX < -0.15;
+
+            const mobileRight =
+                joystickActive &&
+                joystickX > 0.15;
+
+
+            const forward =
+                keyboardForward ||
+                mobileForward;
+
+            const backward =
+                keyboardBackward ||
+                mobileBackward;
+
+            const left =
+                keyboardLeft ||
+                mobileLeft;
+
+            const right =
+                keyboardRight ||
+                mobileRight;
+
+
+            // ========================================================
+            // SPEED
+            // ========================================================
+
+            if (forward) {
+
+                playerSpeed +=
+                    acceleration *
+                    delta;
+
+            }
+            else if (backward) {
+
+                playerSpeed -=
+                    acceleration *
+                    delta;
+
+            }
+            else {
+
+                playerSpeed =
+                    THREE.MathUtils.damp(
+                        playerSpeed,
+                        0,
+                        8,
+                        delta
+                    );
+            }
+
+
+            playerSpeed =
+                THREE.MathUtils.clamp(
+                    playerSpeed,
+                    -2,
+                    maxSpeed
+                );
+
+
+            // ========================================================
+            // TURN
+            // ========================================================
+
+            if (left) {
+
+                player.rotation.y +=
+                    turnSpeed *
+                    delta;
+            }
+
+
+            if (right) {
+
+                player.rotation.y -=
+                    turnSpeed *
+                    delta;
+            }
+
+
+            // ========================================================
+            // MOVE
+            // ========================================================
+
+            const direction =
+                new THREE.Vector3(
+                    0,
+                    0,
+                    -1
+                );
+
+
+            direction.applyQuaternion(
+                player.quaternion
+            );
+
+
+            player.position.add(
+                direction.multiplyScalar(
+                    playerSpeed *
+                    delta
+                )
+            );
+
+
+            // ========================================================
+            // TERRAIN HEIGHT
+            // ========================================================
+
+            const ground =
+                terrainHeight(
+                    player.position.x,
+                    player.position.z
+                );
+
+
+            player.position.y =
+                ground;
+
+
+            // ========================================================
+            // WORLD LIMIT
+            // ========================================================
+
+            player.position.x =
+                THREE.MathUtils.clamp(
+                    player.position.x,
+                    -42,
+                    42
+                );
+
+
+            player.position.z =
+                THREE.MathUtils.clamp(
+                    player.position.z,
+                    -42,
+                    42
+                );
+        }
+
+
+        // ============================================================
+        // CAMERA FOLLOW
+        // ============================================================
+
+        const cameraOffset =
+            new THREE.Vector3(
+                0,
+                5,
+                8
+            );
+
+
+        const cameraTarget =
+            new THREE.Vector3();
+
+
+        function updateCamera(delta) {
+
+            const offset =
+                cameraOffset.clone();
+
+
+            offset.applyQuaternion(
+                player.quaternion
+            );
+
+
+            const desired =
+                player.position
+                    .clone()
+                    .add(offset);
+
+
+            camera.position.lerp(
+                desired,
+                1 -
+                Math.pow(
+                    0.001,
+                    delta
+                )
+            );
+
+
+            cameraTarget.copy(
+                player.position
+            );
+
+
+            cameraTarget.y += 1.1;
+
+
+            camera.lookAt(
+                cameraTarget
+            );
+        }
+
+
+        // ============================================================
+        // ANIMATION
+        // ============================================================
+
+        function animate() {
+
+            requestAnimationFrame(
+                animate
+            );
+
+
+            const delta =
+                Math.min(
+                    clock.getDelta(),
+                    0.05
+                );
+
+
+            updatePlayer(delta);
+
+            updateCamera(delta);
+
+
+            renderer.render(
+                scene,
+                camera
+            );
+        }
+
+
+        animate();
+
+
+        // ============================================================
+        // RESIZE
+        // ============================================================
+
+        window.addEventListener(
+            "resize",
+            () => {
+
+                camera.aspect =
+                    window.innerWidth /
+                    window.innerHeight;
+
+                camera.updateProjectionMatrix();
+
+
+                renderer.setSize(
+                    window.innerWidth,
+                    window.innerHeight
+                );
+
+                renderer.setPixelRatio(
+                    Math.min(
+                        window.devicePixelRatio,
+                        2
+                    )
+                );
+            }
+        );
+
+    </script>
 
 </body>
+
 </html>

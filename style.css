@@ -1,96 +1,462 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 html,
 body {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    touch-action: none;
 }
 
 body {
-  overflow: hidden;
-  background: #9cc9d1;
-  font-family: Arial, Helvetica, sans-serif;
+    position: fixed;
+    inset: 0;
+
+    background: #9cc9d1;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 }
 
 #scene {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+    position: fixed;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
 }
 
 canvas {
-  display: block;
+    display: block;
+
+    width: 100%;
+    height: 100%;
 }
+
+
+/* ============================================================
+   HUD
+============================================================ */
 
 .hud {
-  position: fixed;
-  left: 50%;
-  top: 42%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  pointer-events: none;
-  color: white;
-  z-index: 10;
-  user-select: none;
+    position: fixed;
+
+    left: 50%;
+    top: 42%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width: 90%;
+
+    text-align: center;
+
+    pointer-events: none;
+
+    color: white;
+
+    z-index: 10;
+
+    user-select: none;
 }
+
 
 .hud span {
-  display: block;
-  font-size: 10px;
-  letter-spacing: 8px;
-  color: #eaffdf;
-  opacity: 0.9;
+    display: block;
+
+    font-size: 10px;
+
+    letter-spacing: 8px;
+
+    color: #eaffdf;
+
+    opacity: 0.9;
 }
+
 
 .hud h1 {
-  margin-top: 12px;
-  font-size: clamp(55px, 9vw, 120px);
-  font-weight: 300;
-  letter-spacing: 24px;
-  margin-left: 24px;
-  color: #f2ffe9;
-  text-shadow:
-    0 0 15px #315d2c,
-    0 0 40px #264c24,
-    0 0 80px #1b3820;
+    margin-top: 12px;
+
+    font-size:
+        clamp(55px, 9vw, 120px);
+
+    font-weight: 300;
+
+    letter-spacing: 24px;
+
+    margin-left: 24px;
+
+    color: #f2ffe9;
+
+    text-shadow:
+        0 0 15px #315d2c,
+        0 0 40px #264c24,
+        0 0 80px #1b3820;
 }
+
 
 .line {
-  width: 120px;
-  height: 1px;
-  margin: 18px auto;
-  background: #d9ffd0;
-  box-shadow:
-    0 0 15px #c8ffc0,
-    0 0 30px #9de48d;
+    width: 120px;
+
+    height: 1px;
+
+    margin: 18px auto;
+
+    background: #d9ffd0;
+
+    box-shadow:
+        0 0 15px #c8ffc0,
+        0 0 30px #9de48d;
 }
+
 
 .hud p {
-  font-size: 9px;
-  letter-spacing: 5px;
-  color: #e0f4d8;
-  margin-left: 5px;
+    font-size: 9px;
+
+    letter-spacing: 5px;
+
+    color: #e0f4d8;
+
+    margin-left: 5px;
 }
 
-@media (max-width: 600px) {
 
-  .hud h1 {
-    font-size: 55px;
-    letter-spacing: 12px;
-    margin-left: 12px;
-  }
+.mobile-help {
+    display: none;
+}
 
-  .hud span {
-    letter-spacing: 5px;
-  }
 
-  .hud p {
-    letter-spacing: 3px;
-  }
+/* ============================================================
+   MOBILE CONTROLS
+============================================================ */
 
+.mobile-controls {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 50;
+
+    pointer-events: none;
+
+    user-select: none;
+
+    -webkit-user-select: none;
+}
+
+
+/* ============================================================
+   JOYSTICK
+============================================================ */
+
+.joystick {
+    position: absolute;
+
+    left: 24px;
+    bottom: 28px;
+
+    width: 130px;
+    height: 130px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, 0.10);
+
+    border:
+        2px solid
+        rgba(255, 255, 255, 0.28);
+
+    box-shadow:
+        inset 0 0 20px
+        rgba(255, 255, 255, 0.08),
+
+        0 8px 30px
+        rgba(0, 0, 0, 0.15);
+
+    pointer-events: auto;
+
+    touch-action: none;
+
+    backdrop-filter: blur(5px);
+
+    -webkit-backdrop-filter: blur(5px);
+}
+
+
+/* ============================================================
+   JOYSTICK KNOB
+============================================================ */
+
+.joystick-knob {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 58px;
+    height: 58px;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        rgba(235, 255, 225, 0.65);
+
+    border:
+        2px solid
+        rgba(255, 255, 255, 0.6);
+
+    box-shadow:
+        0 5px 20px
+        rgba(0, 0, 0, 0.25);
+
+    transition:
+        transform 0.05s linear;
+}
+
+
+/* ============================================================
+   JOYSTICK ARROWS
+============================================================ */
+
+.joystick::before {
+    content: "↑";
+
+    position: absolute;
+
+    left: 50%;
+    top: 7px;
+
+    transform:
+        translateX(-50%);
+
+    color:
+        rgba(255, 255, 255, 0.5);
+
+    font-size: 16px;
+
+    pointer-events: none;
+}
+
+
+.joystick::after {
+    content: "↓";
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 7px;
+
+    transform:
+        translateX(-50%);
+
+    color:
+        rgba(255, 255, 255, 0.5);
+
+    font-size: 16px;
+
+    pointer-events: none;
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 768px) {
+
+    .mobile-controls {
+        display: block;
+    }
+
+
+    .desktop-help {
+        display: none;
+    }
+
+
+    .mobile-help {
+        display: block;
+    }
+
+
+    .hud {
+        top: 18%;
+
+        width: 100%;
+    }
+
+
+    .hud span {
+        font-size: 8px;
+
+        letter-spacing: 4px;
+    }
+
+
+    .hud h1 {
+        margin-top: 8px;
+
+        font-size:
+            clamp(42px, 15vw, 70px);
+
+        letter-spacing: 10px;
+
+        margin-left: 10px;
+
+        text-shadow:
+            0 0 10px #315d2c,
+            0 0 25px #264c24,
+            0 0 45px #1b3820;
+    }
+
+
+    .line {
+        width: 70px;
+
+        margin: 10px auto;
+    }
+
+
+    .hud p {
+        font-size: 7px;
+
+        letter-spacing: 2px;
+
+        margin-left: 2px;
+    }
+}
+
+
+/* ============================================================
+   SMALL PHONE
+============================================================ */
+
+@media (max-width: 480px) {
+
+    .hud {
+        top: 15%;
+    }
+
+
+    .hud span {
+        font-size: 7px;
+
+        letter-spacing: 3px;
+    }
+
+
+    .hud h1 {
+        font-size: 48px;
+
+        letter-spacing: 7px;
+
+        margin-left: 7px;
+    }
+
+
+    .hud p {
+        font-size: 6px;
+
+        letter-spacing: 1.5px;
+    }
+
+
+    .joystick {
+        width: 115px;
+        height: 115px;
+
+        left: 18px;
+        bottom: 20px;
+    }
+
+
+    .joystick-knob {
+        width: 52px;
+        height: 52px;
+    }
+}
+
+
+/* ============================================================
+   VERY SMALL PHONE
+============================================================ */
+
+@media (max-width: 360px) {
+
+    .hud {
+        top: 12%;
+    }
+
+
+    .hud h1 {
+        font-size: 40px;
+
+        letter-spacing: 5px;
+    }
+
+
+    .joystick {
+        width: 105px;
+        height: 105px;
+
+        left: 14px;
+        bottom: 15px;
+    }
+
+
+    .joystick-knob {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+
+/* ============================================================
+   LANDSCAPE MOBILE
+============================================================ */
+
+@media
+(max-width: 900px)
+and (orientation: landscape) {
+
+    .hud {
+        top: 18%;
+    }
+
+
+    .hud h1 {
+        font-size: 45px;
+
+        letter-spacing: 7px;
+    }
+
+
+    .joystick {
+        width: 105px;
+        height: 105px;
+
+        left: 18px;
+        bottom: 15px;
+    }
+
+
+    .joystick-knob {
+        width: 48px;
+        height: 48px;
+    }
 }
