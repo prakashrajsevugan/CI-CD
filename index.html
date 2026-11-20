@@ -4,16 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Prakash Raj | Portfolio</title>
+    <title>Prakash Raj | Developer</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- Navigation -->
+    <!-- Background -->
+    <div class="background">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+        <div class="grid"></div>
+    </div>
+
+
+    <!-- Navbar -->
     <nav>
-        <h2>Prakash Raj</h2>
+
+        <div class="logo">
+            <span>PR</span>
+        </div>
 
         <div class="nav-links">
             <a href="#home">Home</a>
@@ -21,123 +32,210 @@
             <a href="#projects">Projects</a>
             <a href="#contact">Contact</a>
         </div>
+
+        <a href="#contact" class="nav-button">
+            Let's Talk
+        </a>
+
     </nav>
 
 
     <!-- Hero -->
-    <section id="home" class="hero">
+    <main id="home">
 
-        <div class="hero-text">
-            <p class="hello">Hello, I'm</p>
+        <section class="hero">
 
-            <h1>Prakash Raj</h1>
+            <div class="hero-content">
 
-            <h2>
-                Full Stack & 3D Web Developer
-            </h2>
+                <div class="available">
+                    <span></span>
+                    Available for work
+                </div>
 
-            <p>
-                I build modern web applications and interactive
-                3D experiences using React, Node.js and Three.js.
-            </p>
+                <p class="small-title">
+                    FULL STACK & 3D WEB DEVELOPER
+                </p>
 
-            <div class="buttons">
-                <a href="#projects" class="primary-btn">
-                    View Projects
-                </a>
+                <h1>
+                    Building digital
+                    <span>experiences</span>
+                    that feel different.
+                </h1>
 
-                <a href="#contact" class="secondary-btn">
-                    Contact Me
-                </a>
+                <p class="description">
+                    I'm Prakash Raj, a developer focused on building
+                    modern web applications, interactive interfaces
+                    and immersive 3D experiences.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a href="#projects" class="button primary">
+                        Explore Projects
+                        <span>↗</span>
+                    </a>
+
+                    <a href="#contact" class="button secondary">
+                        Get in touch
+                    </a>
+
+                </div>
+
             </div>
+
+
+            <!-- 3D AREA -->
+            <div class="visual">
+
+                <div class="orbit orbit-1"></div>
+                <div class="orbit orbit-2"></div>
+
+                <!-- Main 3D object -->
+                <div class="sphere">
+
+                    <div class="sphere-line line-1"></div>
+                    <div class="sphere-line line-2"></div>
+                    <div class="sphere-line line-3"></div>
+                    <div class="sphere-line line-4"></div>
+
+                </div>
+
+
+                <!-- Floating objects -->
+
+                <div class="floating-card card-1">
+                    <span>&lt;/&gt;</span>
+                </div>
+
+                <div class="floating-card card-2">
+                    <span>✦</span>
+                </div>
+
+                <div class="floating-card card-3">
+                    <span>◈</span>
+                </div>
+
+                <div class="floating-dot dot-1"></div>
+                <div class="floating-dot dot-2"></div>
+                <div class="floating-dot dot-3"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Tech bar -->
+
+        <div class="tech-bar">
+
+            <span>REACT</span>
+            <span>THREE.JS</span>
+            <span>NODE.JS</span>
+            <span>JAVASCRIPT</span>
+            <span>AWS</span>
+            <span>GIT</span>
+
         </div>
 
-
-        <!-- 3D Object -->
-        <div class="scene">
-
-            <div class="cube">
-
-                <div class="face front">PR</div>
-                <div class="face back">WEB</div>
-                <div class="face right">3D</div>
-                <div class="face left">DEV</div>
-                <div class="face top">JS</div>
-                <div class="face bottom">CODE</div>
-
-            </div>
-
-        </div>
-
-    </section>
+    </main>
 
 
     <!-- About -->
-    <section id="about">
 
-        <h2 class="section-title">About Me</h2>
+    <section id="about" class="section">
 
-        <p class="about-text">
-            I'm a Computer Science student and web developer interested
-            in building clean, interactive and useful web experiences.
-            I enjoy working with frontend technologies, backend APIs,
-            cloud services and 3D web development.
+        <p class="section-label">01 — ABOUT</p>
+
+        <h2>
+            Turning ideas into
+            <span>interactive experiences.</span>
+        </h2>
+
+        <p class="section-text">
+            I enjoy creating clean interfaces, full-stack applications
+            and interactive 3D websites. My focus is on combining
+            good design with useful technology.
         </p>
-
-        <div class="skills">
-            <span>HTML</span>
-            <span>CSS</span>
-            <span>JavaScript</span>
-            <span>React</span>
-            <span>Node.js</span>
-            <span>Three.js</span>
-            <span>AWS</span>
-            <span>Git</span>
-        </div>
 
     </section>
 
 
     <!-- Projects -->
-    <section id="projects">
 
-        <h2 class="section-title">Projects</h2>
+    <section id="projects" class="section projects-section">
+
+        <p class="section-label">02 — PROJECTS</p>
+
+        <h2>
+            Selected <span>work.</span>
+        </h2>
+
 
         <div class="projects">
 
-            <div class="project">
+            <div class="project-card">
+
+                <div class="project-number">
+                    01
+                </div>
+
                 <h3>Global Chat</h3>
 
                 <p>
-                    Real-time chat application built with
+                    Real-time communication platform built with
                     React, Node.js, Socket.IO and PostgreSQL.
                 </p>
 
-                <a href="#">View Project →</a>
+                <div class="project-tech">
+                    React · Node · PostgreSQL
+                </div>
+
+                <a href="#">View project ↗</a>
+
             </div>
 
 
-            <div class="project">
+            <div class="project-card">
+
+                <div class="project-number">
+                    02
+                </div>
+
                 <h3>3D Portfolio</h3>
 
                 <p>
-                    Interactive portfolio experience using
-                    Three.js and modern web technologies.
+                    Interactive web experience focused on
+                    3D visuals and modern UI design.
                 </p>
 
-                <a href="#">View Project →</a>
+                <div class="project-tech">
+                    Three.js · JavaScript · CSS
+                </div>
+
+                <a href="#">View project ↗</a>
+
             </div>
 
 
-            <div class="project">
-                <h3>Cloud Deployment</h3>
+            <div class="project-card">
+
+                <div class="project-number">
+                    03
+                </div>
+
+                <h3>Cloud Projects</h3>
 
                 <p>
-                    Web application deployed using AWS,
-                    Docker and modern CI/CD workflows.
+                    Applications deployed using AWS, Docker
+                    and modern cloud infrastructure.
                 </p>
 
-                <a href="#">View Project →</a>
+                <div class="project-tech">
+                    AWS · Docker · Linux
+                </div>
+
+                <a href="#">View project ↗</a>
+
             </div>
 
         </div>
@@ -146,23 +244,25 @@
 
 
     <!-- Contact -->
-    <section id="contact">
 
-        <h2 class="section-title">Let's Connect</h2>
+    <section id="contact" class="contact">
 
-        <p>
-            Interested in working together or discussing a project?
-        </p>
+        <p class="section-label">03 — CONTACT</p>
 
-        <a class="primary-btn" href="mailto:your@email.com">
-            Send Email
+        <h2>
+            Let's build something
+            <span>interesting.</span>
+        </h2>
+
+        <a href="mailto:your@email.com" class="contact-button">
+            Start a conversation ↗
         </a>
 
     </section>
 
 
     <footer>
-        <p>© 2026 Prakash Raj</p>
+        © 2026 Prakash Raj
     </footer>
 
 </body>
